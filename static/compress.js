@@ -15,8 +15,94 @@ document.addEventListener("DOMContentLoaded", () => {
     sliderValueSpan.textContent = qualitySlider.value;
   });
 
+  let selectedFileCompress = null;
+
+  // Setup drag and drop untuk compress
+  setupDragAndDrop("uploadAreaCompress", "fileInputCompress", (file) => {
+    selectedFileCompress = file;
+    showCompressPreview(file, "uploadAreaCompress");
+  });
+
+  // File input change handler
+  document
+    .getElementById("fileInputCompress")
+    .addEventListener("change", function (e) {
+      if (e.target.files.length > 0) {
+        selectedFileCompress = e.target.files[0];
+        showCompressPreview(selectedFileCompress, "uploadAreaCompress");
+      }
+    });
+
+  function setupDragAndDrop(uploadAreaId, inputId, callback) {
+    const uploadArea = document.getElementById(uploadAreaId);
+
+    uploadArea.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      uploadArea.classList.add("dragover");
+    });
+
+    uploadArea.addEventListener("dragleave", function (e) {
+      e.preventDefault();
+      uploadArea.classList.remove("dragover");
+    });
+
+    uploadArea.addEventListener("drop", function (e) {
+      e.preventDefault();
+      uploadArea.classList.remove("dragover");
+
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && files[0].type.startsWith("image/")) {
+        callback(files[0]);
+      }
+    });
+  }
+
+  function showCompressPreview(file, containerId) {
+    const container = document.getElementById(containerId);
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      let preview = "";
+      const mime = file.type;
+
+      if (mime.startsWith("image/")) {
+        preview = `<img src="${e.target.result}" class="preview-image mb-3" alt="Preview">`;
+      } else if (mime.startsWith("audio/")) {
+        preview = `<audio controls class="w-100 mb-3"><source src="${e.target.result}" type="${mime}"></audio>`;
+      } else if (mime.startsWith("video/")) {
+        preview = `<video controls class="w-100 mb-3" style="max-height: 300px;"><source src="${e.target.result}" type="${mime}"></video>`;
+      } else {
+        preview = `<p class="text-danger">Preview tidak tersedia untuk tipe file ini</p>`;
+      }
+
+      container.innerHTML = `
+      ${preview}
+      <p class="text-success"><i class="fas fa-check me-2"></i>${file.name}</p>
+      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetUpload('${containerId}', 'fileInputCompress')">
+          <i class="fas fa-times me-1"></i>Ganti File
+      </button>
+    `;
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function resetUpload(containerId, inputId) {
+    const container = document.getElementById(containerId);
+    const input = document.getElementById(inputId);
+    input.value = "";
+    container.innerHTML = `
+    <i class="fas fa-file-upload fa-3x text-muted mb-3"></i>
+    <p class="mb-3">Drag & drop file di sini atau klik untuk memilih</p>
+    <input type="file" id="${inputId}" class="d-none" accept="image/*,audio/*,video/*">
+    <button type="button" class="btn btn-custom" onclick="document.getElementById('${inputId}').click()">
+      Pilih File
+    </button>
+  `;
+  }
+
   compressBtn.addEventListener("click", async () => {
-    const file = fileInput.files[0];
+    const file = selectedFileCompress;
     if (!file) return alert("Silakan pilih file terlebih dahulu.");
 
     const fileType = file.type.split("/")[0];
