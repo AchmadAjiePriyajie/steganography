@@ -12,113 +12,14 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
       rel="stylesheet"
     />
-    <style>
-      body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      }
-
-      .main-container {
-        background: rgba(255, 255, 255, 0.95);
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-        backdrop-filter: blur(10px);
-        margin: 50px auto;
-        max-width: 1000px;
-      }
-
-      .nav-pills .nav-link {
-        border-radius: 25px;
-        margin: 0 5px;
-        transition: all 0.3s ease;
-      }
-
-      .nav-pills .nav-link.active {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-      }
-
-      .upload-area {
-        border: 3px dashed #667eea;
-        border-radius: 15px;
-        padding: 40px;
-        text-align: center;
-        transition: all 0.3s ease;
-        background: rgba(102, 126, 234, 0.05);
-      }
-
-      .upload-area:hover {
-        border-color: #764ba2;
-        background: rgba(118, 75, 162, 0.1);
-      }
-
-      .upload-area.dragover {
-        border-color: #28a745;
-        background: rgba(40, 167, 69, 0.1);
-      }
-
-      .btn-custom {
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        border: none;
-        border-radius: 25px;
-        padding: 12px 30px;
-        color: white;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-      }
-
-      .btn-custom:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-        color: white;
-      }
-
-      .result-card {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border-radius: 15px;
-        padding: 20px;
-        margin-top: 20px;
-        border: 1px solid #dee2e6;
-      }
-
-      .preview-image {
-        max-width: 100%;
-        max-height: 300px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .loading {
-        display: none;
-      }
-
-      .alert-custom {
-        border-radius: 15px;
-        border: none;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-      }
-
-      .form-control {
-        border-radius: 15px;
-        border: 2px solid #e9ecef;
-        transition: all 0.3s ease;
-      }
-
-      .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-      }
-
-      .header-icon {
-        font-size: 3rem;
-        background: linear-gradient(45deg, #667eea, #764ba2);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-      }
-    </style>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="/static/styles.css"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div class="container">
@@ -220,13 +121,6 @@
                 >
                   <i class="fas fa-magic me-2"></i>Sembunyikan Pesan
                 </button>
-
-                <div class="loading text-center mt-3" id="loadingEncode">
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                  <p class="mt-2">Memproses gambar...</p>
-                </div>
               </div>
 
               <div class="col-md-6">
@@ -238,13 +132,14 @@
                   <div class="result-card text-center">
                     <img id="encodedImage" class="preview-image mb-3" />
                     <div>
-                      <button
+                      <a
                         type="button"
                         class="btn btn-success"
-                        id="downloadBtn"
+                        id="downloadEncodedBtn"
+                        download="steganography_image.png"
                       >
                         <i class="fas fa-download me-2"></i>Download Gambar
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>
@@ -286,13 +181,6 @@
                 >
                   <i class="fas fa-key me-2"></i>Ekstrak Pesan
                 </button>
-
-                <div class="loading text-center mt-3" id="loadingDecode">
-                  <div class="spinner-border text-primary" role="status">
-                    <span class="visually-hidden">Loading...</span>
-                  </div>
-                  <p class="mt-2">Mengekstrak pesan...</p>
-                </div>
               </div>
 
               <div class="col-md-6">
@@ -338,8 +226,8 @@
                   <input
                     type="file"
                     id="fileInputCompress"
-                    class="d-none"
                     accept="image/*,audio/*,video/*"
+                    class="d-none"
                   />
                   <button
                     type="button"
@@ -350,9 +238,9 @@
                   </button>
                 </div>
 
-                <div class="mt-3">
+                <div class="mt-3 form-group">
                   <label for="qualitySlider" class="form-label"
-                    >Tingkat Kompresi</label
+                    >Tingkat Kompresi (<span id="sliderValue">30</span>)</label
                   >
                   <input
                     type="range"
@@ -362,7 +250,6 @@
                     value="30"
                     class="form-range"
                   />
-                  <span id="sliderValue">30</span>
                 </div>
 
                 <button
@@ -372,7 +259,9 @@
                 >
                   <i class="fas fa-compress-alt me-2"></i>Kompresi File
                 </button>
+              </div>
 
+              <div class="col-md-6">
                 <div
                   class="loading text-center mt-3"
                   id="loadingCompress"
@@ -383,16 +272,13 @@
                   </div>
                   <p class="mt-2">Memproses file...</p>
                 </div>
-              </div>
 
-              <div class="col-md-6">
                 <div id="compressResult" style="display: none">
                   <h4 class="mb-4">
                     <i class="fas fa-chart-line text-info me-2"></i>Hasil
                     Kompresi
                   </h4>
                   <div class="result-card text-center">
-                    <div id="originalPreview"></div>
                     <div id="compressedPreview" class="mt-3"></div>
                     <p id="compressionInfo" class="mt-3"></p>
                     <a
@@ -409,291 +295,18 @@
             </div>
           </div>
         </div>
-
-        <!-- Alert Area -->
-        <div id="alertArea" class="mt-4"></div>
       </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" 
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/wavesurfer.js/2.0.4/wavesurfer.min.js" 
+      integrity="sha512-mhqErQ0f2UqnbsjgKpM96XfxVjVMnXpszEXKmnJk8467vR8h0MpiPauil8TKi5F5DldQGqNUO/XTyWbQku22LQ==" 
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="/static/steganography.js"></script>
     <script src="/static/compress.js"></script>
-    <script>
-      let selectedImageEncode = null;
-      let selectedImageDecode = null;
-
-      // Setup drag and drop untuk encode
-      setupDragAndDrop("uploadAreaEncode", "imageInputEncode", (file) => {
-        selectedImageEncode = file;
-        showImagePreview(file, "uploadAreaEncode");
-      });
-
-      // Setup drag and drop untuk decode
-      setupDragAndDrop("uploadAreaDecode", "imageInputDecode", (file) => {
-        selectedImageDecode = file;
-        showImagePreview(file, "uploadAreaDecode");
-      });
-
-      // File input change handlers
-      document
-        .getElementById("imageInputEncode")
-        .addEventListener("change", function (e) {
-          if (e.target.files.length > 0) {
-            selectedImageEncode = e.target.files[0];
-            showImagePreview(selectedImageEncode, "uploadAreaEncode");
-          }
-        });
-
-      document
-        .getElementById("imageInputDecode")
-        .addEventListener("change", function (e) {
-          if (e.target.files.length > 0) {
-            selectedImageDecode = e.target.files[0];
-            showImagePreview(selectedImageDecode, "uploadAreaDecode");
-          }
-        });
-
-      // Encode button handler
-      document
-        .getElementById("encodeBtn")
-        .addEventListener("click", function () {
-          const message = document.getElementById("messageInput").value.trim();
-
-          if (!selectedImageEncode) {
-            showAlert("Silakan pilih gambar terlebih dahulu!", "warning");
-            return;
-          }
-
-          if (!message) {
-            showAlert(
-              "Silakan masukkan pesan yang ingin disembunyikan!",
-              "warning"
-            );
-            return;
-          }
-
-          encodeMessage();
-        });
-
-      // Decode button handler
-      document
-        .getElementById("decodeBtn")
-        .addEventListener("click", function () {
-          if (!selectedImageDecode) {
-            showAlert("Silakan pilih gambar terlebih dahulu!", "warning");
-            return;
-          }
-
-          decodeMessage();
-        });
-
-      // Copy button handler
-      document.getElementById("copyBtn").addEventListener("click", function () {
-        const messageText = document.getElementById("decodedMessage").value;
-        navigator.clipboard.writeText(messageText).then(() => {
-          showAlert("Pesan berhasil disalin ke clipboard!", "success");
-        });
-      });
-
-      function setupDragAndDrop(uploadAreaId, inputId, callback) {
-        const uploadArea = document.getElementById(uploadAreaId);
-
-        uploadArea.addEventListener("dragover", function (e) {
-          e.preventDefault();
-          uploadArea.classList.add("dragover");
-        });
-
-        uploadArea.addEventListener("dragleave", function (e) {
-          e.preventDefault();
-          uploadArea.classList.remove("dragover");
-        });
-
-        uploadArea.addEventListener("drop", function (e) {
-          e.preventDefault();
-          uploadArea.classList.remove("dragover");
-
-          const files = e.dataTransfer.files;
-          if (files.length > 0 && files[0].type.startsWith("image/")) {
-            callback(files[0]);
-          }
-        });
-      }
-
-      function showImagePreview(file, containerId) {
-        const container = document.getElementById(containerId);
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
-          container.innerHTML = `
-                    <img src="${
-                      e.target.result
-                    }" class="preview-image mb-3" alt="Preview">
-                    <p class="text-success"><i class="fas fa-check me-2"></i>${
-                      file.name
-                    }</p>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="resetUpload('${containerId}', '${
-            containerId === "uploadAreaEncode"
-              ? "imageInputEncode"
-              : "imageInputDecode"
-          }')">
-                        <i class="fas fa-times me-1"></i>Ganti Gambar
-                    </button>
-                `;
-        };
-
-        reader.readAsDataURL(file);
-      }
-
-      function resetUpload(containerId, inputId) {
-        const container = document.getElementById(containerId);
-        const input = document.getElementById(inputId);
-
-        if (containerId === "uploadAreaEncode") {
-          selectedImageEncode = null;
-        } else {
-          selectedImageDecode = null;
-        }
-
-        input.value = "";
-
-        const isEncode = containerId === "uploadAreaEncode";
-        container.innerHTML = `
-                <i class="fas fa-${
-                  isEncode ? "cloud-upload-alt" : "image"
-                } fa-3x text-muted mb-3"></i>
-                <p class="mb-3">${
-                  isEncode
-                    ? "Drag & drop gambar di sini atau klik untuk memilih"
-                    : "Drag & drop gambar yang berisi pesan tersembunyi"
-                }</p>
-                <button type="button" class="btn btn-custom" onclick="document.getElementById('${inputId}').click()">
-                    Pilih Gambar
-                </button>
-            `;
-      }
-
-      function encodeMessage() {
-        const formData = new FormData();
-        formData.append("image", selectedImageEncode);
-        formData.append(
-          "message",
-          document.getElementById("messageInput").value
-        );
-
-        document.getElementById("loadingEncode").style.display = "block";
-        document.getElementById("encodeResult").style.display = "none";
-
-        fetch("/encode", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("loadingEncode").style.display = "none";
-
-            if (data.success) {
-              const encodedImage = document.getElementById("encodedImage");
-              encodedImage.src = "data:image/png;base64," + data.image;
-
-              document.getElementById("encodeResult").style.display = "block";
-
-              // Setup download button
-              document.getElementById("downloadBtn").onclick = function () {
-                downloadImage(data.image, "steganography_image.png");
-              };
-
-              showAlert(data.message, "success");
-            } else {
-              showAlert(data.error, "danger");
-            }
-          })
-          .catch((error) => {
-            document.getElementById("loadingEncode").style.display = "none";
-            showAlert(
-              "Terjadi kesalahan saat memproses gambar: " + error.message,
-              "danger"
-            );
-          });
-      }
-
-      function decodeMessage() {
-        const formData = new FormData();
-        formData.append("image", selectedImageDecode);
-
-        document.getElementById("loadingDecode").style.display = "block";
-        document.getElementById("decodeResult").style.display = "none";
-
-        fetch("/decode", {
-          method: "POST",
-          body: formData,
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            document.getElementById("loadingDecode").style.display = "none";
-
-            if (data.success) {
-              document.getElementById("decodedMessage").value = data.message;
-              document.getElementById("decodeResult").style.display = "block";
-
-              if (data.message === "Tidak ada pesan tersembunyi ditemukan") {
-                showAlert(
-                  "Tidak ada pesan tersembunyi yang ditemukan dalam gambar ini.",
-                  "info"
-                );
-              } else {
-                showAlert("Pesan berhasil diekstrak dari gambar!", "success");
-              }
-            } else {
-              showAlert(data.error, "danger");
-            }
-          })
-          .catch((error) => {
-            document.getElementById("loadingDecode").style.display = "none";
-            showAlert(
-              "Terjadi kesalahan saat memproses gambar: " + error.message,
-              "danger"
-            );
-          });
-      }
-
-      function downloadImage(base64Data, filename) {
-        const link = document.createElement("a");
-        link.href = "data:image/png;base64," + base64Data;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }
-
-      function showAlert(message, type) {
-        const alertArea = document.getElementById("alertArea");
-        const alertHtml = `
-                <div class="alert alert-${type} alert-custom alert-dismissible fade show" role="alert">
-                    <i class="fas fa-${getAlertIcon(type)} me-2"></i>
-                    ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            `;
-        alertArea.innerHTML = alertHtml;
-
-        // Auto hide after 5 seconds
-        setTimeout(() => {
-          const alert = alertArea.querySelector(".alert");
-          if (alert) {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-          }
-        }, 5000);
-      }
-
-      function getAlertIcon(type) {
-        const icons = {
-          success: "check-circle",
-          danger: "exclamation-triangle",
-          warning: "exclamation-circle",
-          info: "info-circle",
-        };
-        return icons[type] || "info-circle";
-      }
-    </script>
   </body>
 </html>
